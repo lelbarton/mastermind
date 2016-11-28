@@ -3,5 +3,6 @@ type State = (Code, Code, [Guess]) -- the code to be guessed, the next player in
 
 data CodePeg = Yellow | Red | Blue | Purple | Green | Orange -- available CodePeg
 data KeyPeg = W | B | O -- white, black, and no peg
+type Hint = (KeyPeg, KeyPeg, KeyPeg, KeyPeg)
 -- a player's guess and the response
-data Guess = ([CodePeg, CodePeg, CodePeg, CodePeg], [KeyPeg, KeyPeg, KeyPeg, KeyPeg])
+type Guess = (Code, Hint)
