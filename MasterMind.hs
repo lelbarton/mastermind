@@ -14,7 +14,7 @@ type Guess = (Code, Hint) -- a player's guess and the response
 
 type State = (Code, [Guess]) -- the code to be guessed, previous guesses
 
-data Action = Move Code State   -- do AMove in State
+data Action = Move Code State   -- input Code in State
             | Start              -- returns starting state
             
 data Result = EndOfGame Int        -- end of game
@@ -32,7 +32,9 @@ mastermind (Move guess (code, prevresult))
   | otherwise =
       ContinueGame (code, (guess, (makehint guess code)):prevresult)
 
-
+-- TODO
+-- currently start with random code that user must break
+-- mastermind Start = ContinueGame (rndcode, [])
 
 -- Makehint + helpers --
 makehint :: Code -> Code -> Hint
