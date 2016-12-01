@@ -14,7 +14,7 @@ type Code = (CodePeg, CodePeg, CodePeg, CodePeg)  -- a player's guess of four Co
 type Hint = (KeyPeg, KeyPeg, KeyPeg, KeyPeg) -- a player's score
 type Guess = (Code, Hint) -- a player's guess and the response
 
-type State = (Code, [Guess]) -- the code to be guessed, previous guesses
+data State = State Code [Guess] -- the code to be guessed, previous guesses
 
 data Action = Move Code State   -- input Code in State
             | Start              -- returns starting state
@@ -28,13 +28,13 @@ type Player = Game -> Result -> Code
 
 -- MasterMind --
 mastermind :: Game
-mastermind (Move guess (code, prevresult))
+mastermind (Move guess (State code prevresult))
   | guess == code = EndOfGame 1
   | length prevresult == 8 = EndOfGame 0
   | otherwise =
-      ContinueGame (code, (guess, (makehint guess code)):prevresult)
+      ContinueGame (State code ((guess, (makehint guess code)):prevresult))
 
-mastermind Start = ContinueGame(secretcode, [])
+mastermind Start = ContinueGame(State secretcode [])
 
 -- TODO randomize code
 secretcode :: Code
@@ -78,6 +78,10 @@ hintnum2list x y n
   | x == 0 = W:(hintnum2list 0 (y-1) (n-1))
   | otherwise = B:(hintnum2list (x-1) y (n-1))
 
-
+instance Show State where
+ show (State secret guesses)= "Custom show text\n"
+  -- state equality does not include the deck.
+instance Eq State where
+ State sc1 g1 == State sc2 g2 = sc1 == sc2 && g1 == g2
 -- guess = (Yellow,Blue,Green,Orange)
 -- code = (Yellow,Green,Purple,Blue)

@@ -18,7 +18,6 @@ play game start tournament_state =
 
 
 person_play :: Game -> Result -> TournammentState -> IO TournammentState
--- opponent has played, the person must now play
 person_play game (EndOfGame 0) (wins,losses) =
    do
       putStrLn "Computer won!"
