@@ -1,5 +1,7 @@
 module MasterMind where
 import Data.List
+import System.Random.Shuffle
+import System.Random
 
 -- Data --
 data CodePeg = Yellow | Red | Blue | Purple | Green | Orange -- available CodePeg
@@ -16,10 +18,10 @@ type State = (Code, [Guess]) -- the code to be guessed, previous guesses
 
 data Action = Move Code State   -- input Code in State
             | Start              -- returns starting state
-            
+
 data Result = EndOfGame Int        -- end of game
             | ContinueGame State   -- continue with new state
-         deriving (Eq, Show)     
+         deriving (Eq, Show)
 
 type Game = Action -> Result
 type Player = Game -> Result -> Code
@@ -32,8 +34,20 @@ mastermind (Move guess (code, prevresult))
   | otherwise =
       ContinueGame (code, (guess, (makehint guess code)):prevresult)
 
+mastermind Start = ContinueGame(secretcode, [])
+
+-- TODO randomize code
+secretcode :: Code
+secretcode = (\(a:b:c:d:e) -> (a,b,c,d)) [(minBound::CodePeg) ..]
+
+--
+-- shuffle x = do
+-- 	i <- System.Random.randomRIO (0, length(x)-1)
+-- 	r <- shuffle (take i x ++ drop (i+1) x)
+-- 	return (x!!i : r)
+
 -- TODO
--- currently start with random code that user must break
+-- start with random code that user must break
 -- mastermind Start = ContinueGame (rndcode, [])
 
 -- Makehint + helpers --
@@ -42,7 +56,7 @@ makehint guess code = (hintnum2tuple numblack numwhite)
   where
     guessl = (\(a,b,c,d) -> [a,b,c,d]) guess
     codel = (\(a,b,c,d) -> [a,b,c,d]) code
-    numblack = countblack guessl codel    
+    numblack = countblack guessl codel
     numwhite = countwhite guessl codel
 
 -- first count total number of pegs that are the same between guess and code
