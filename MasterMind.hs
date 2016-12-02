@@ -1,4 +1,4 @@
-module MasterMind where
+xmodule MasterMind where
 import Data.List
 
 -- Data --
