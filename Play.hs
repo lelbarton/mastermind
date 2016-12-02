@@ -28,6 +28,6 @@ person_play game (EndOfGame 1) (wins,losses) =
     play game (game Start) (wins+1,losses)
 person_play game (ContinueGame state) tournament_state =
    do
-      putStrLn ("State is "++show state++" Enter your next guess ")
+      putStrLn ("State is: \n"++show state++" Enter your next guess ")
       line <- getLine
       person_play game (game (Move (read line :: Code) state)) tournament_state
