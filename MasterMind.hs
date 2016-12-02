@@ -46,10 +46,6 @@ secretcode = (\(a:b:c:d:e) -> (a,b,c,d)) [(minBound::CodePeg) ..]
 -- 	r <- shuffle (take i x ++ drop (i+1) x)
 -- 	return (x!!i : r)
 
--- TODO
--- start with random code that user must break
--- mastermind Start = ContinueGame (rndcode, [])
-
 -- Makehint + helpers --
 makehint :: Code -> Code -> Hint
 makehint guess code = (hintnum2tuple numblack numwhite)
@@ -78,12 +74,14 @@ hintnum2list x y n
   | x == 0 = W:(hintnum2list 0 (y-1) (n-1))
   | otherwise = B:(hintnum2list (x-1) y (n-1))
 
+-- keep the secret code hidden, but display previous guesses and hints
 instance Show State where
  show (State secret guesses)
      | guesses == [] = "<None>\n"
-     | otherwise = unlines (reverse [show g | g <- guesses]) --"Custom show text\n"
-  -- state equality does not include the deck.
+     | otherwise = unlines (reverse [show g | g <- guesses])
+
 instance Eq State where
  State sc1 g1 == State sc2 g2 = sc1 == sc2 && g1 == g2
+
 -- guess = (Yellow,Blue,Green,Orange)
 -- code = (Yellow,Green,Purple,Blue)
