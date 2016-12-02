@@ -79,7 +79,9 @@ hintnum2list x y n
   | otherwise = B:(hintnum2list (x-1) y (n-1))
 
 instance Show State where
- show (State secret guesses)= unlines (reverse [show g | g <- guesses]) --"Custom show text\n"
+ show (State secret guesses)
+     | guesses == [] = "<None>\n"
+     | otherwise = unlines (reverse [show g | g <- guesses]) --"Custom show text\n"
   -- state equality does not include the deck.
 instance Eq State where
  State sc1 g1 == State sc2 g2 = sc1 == sc2 && g1 == g2
