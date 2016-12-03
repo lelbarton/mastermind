@@ -1,25 +1,32 @@
-xmodule MasterMind where
+module MasterMind where
+
 import Data.List
-import System.Random.Shuffle
 import System.Random
 
 -- Data --
 data CodePeg = Yellow | Red | Blue | Purple | Green | Orange -- available CodePeg
   deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
+instance Random CodePeg where
+    random g = case randomR (fromEnum (minBound :: CodePeg), fromEnum (maxBound :: CodePeg)) g of
+                 (r, g') -> (toEnum r, g')
+    randomR (a,b) g = case randomR (fromEnum a, fromEnum b) g of
+                 (r, g') -> (toEnum r, g')
+
 data KeyPeg = W | B | O -- white, black, and no peg
   deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 type Code = (CodePeg, CodePeg, CodePeg, CodePeg)  -- a player's guess of four CodePegs
 type Hint = (KeyPeg, KeyPeg, KeyPeg, KeyPeg) -- a player's score
+type BoxOfPegs = [CodePeg]
 type Guess = (Code, Hint) -- a player's guess and the response
 
-data State = State Code [Guess] -- the code to be guessed, previous guesses
+data State = State Code [Guess] BoxOfPegs -- the code to be guessed, previous guesses
 
 data Action = Move Code State   -- input Code in State
-            | Start              -- returns starting state
+            | Start BoxOfPegs   -- returns starting state with new box of pegs
 
-data Result = EndOfGame Int        -- end of game
+data Result = EndOfGame Int BoxOfPegs        -- end of game
             | ContinueGame State   -- continue with new state
          deriving (Eq, Show)
 
@@ -28,23 +35,14 @@ type Player = Game -> Result -> Code
 
 -- MasterMind --
 mastermind :: Game
-mastermind (Move guess (State code prevresult))
-  | guess == code = EndOfGame 1
-  | length prevresult == 8 = EndOfGame 0
+mastermind (Move guess (State code prevresult boxOfPegs))
+  | guess == code = EndOfGame 1 boxOfPegs
+  | length prevresult == 8 = EndOfGame 0 boxOfPegs
   | otherwise =
-      ContinueGame (State code ((guess, (makehint guess code)):prevresult))
+      ContinueGame (State code ((guess, (makehint guess code)):prevresult) boxOfPegs)
 
-mastermind Start = ContinueGame(State secretcode [])
-
--- TODO randomize code
-secretcode :: Code
-secretcode = (\(a:b:c:d:e) -> (a,b,c,d)) [(minBound::CodePeg) ..]
-
---
--- shuffle x = do
--- 	i <- System.Random.randomRIO (0, length(x)-1)
--- 	r <- shuffle (take i x ++ drop (i+1) x)
--- 	return (x!!i : r)
+mastermind (Start boxOfPegs)  =
+  ContinueGame (State (((\[a,b,c,d] -> (a,b,c,d)) (take 4 boxOfPegs)) :: Code) [] boxOfPegs)
 
 -- Makehint + helpers --
 makehint :: Code -> Code -> Hint
@@ -76,12 +74,12 @@ hintnum2list x y n
 
 -- keep the secret code hidden, but display previous guesses and hints
 instance Show State where
- show (State secret guesses)
+ show (State secret guesses boxOfPegs)
      | guesses == [] = "<None>\n"
      | otherwise = unlines (reverse [show g | g <- guesses])
 
 instance Eq State where
- State sc1 g1 == State sc2 g2 = sc1 == sc2 && g1 == g2
+ State sc1 g1 b1 == State sc2 g2 b2 = sc1 == sc2 && g1 == g2 && b1 == b2
 
 -- guess = (Yellow,Blue,Green,Orange)
 -- code = (Yellow,Green,Purple,Blue)
