@@ -3,6 +3,7 @@ module Play where
 import MasterMind
 import System.IO
 import System.Random
+import Text.Read
 
 type TournammentState = (Int,Int)   -- wins, losses
 
@@ -29,8 +30,10 @@ person_play game (ContinueGame state) tournament_state =
    do
       putStrLn ("Guesses so far: \n"++show state++" Enter your next guess ")
       line <- getLine
-      person_play game (game (Move (read line :: Code) state)) tournament_state
-
+      case readMaybe line :: Maybe Code of
+        Just x ->  person_play game (game (Move x state)) tournament_state
+        Nothing -> putStrLn "Invalid input, try again."
+          >> (person_play game (ContinueGame state) tournament_state)
 
 playMM = do
   g <- getStdGen  
