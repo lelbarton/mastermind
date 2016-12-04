@@ -25,8 +25,8 @@ getfth (_,_,_,a) = a
 
 render :: Code -> Picture
 render code = pictures [
-    translate (-75) 0 $ color (getcolor (getfst code)) $ circleSolid 50,
-    translate (-225) 0 $ color (getcolor (getsnd code)) $ circleSolid 50,
+    translate (-225) 0 $ color (getcolor (getfst code)) $ circleSolid 50,
+    translate (-75) 0 $ color (getcolor (getsnd code)) $ circleSolid 50,
     translate 75 0 $ color (getcolor (getthd code)) $ circleSolid 50,
     translate 225 0 $ color (getcolor (getfth code)) $ circleSolid 50
     ]
