@@ -26,7 +26,7 @@ data State = State Code [Guess] BoxOfPegs -- the code to be guessed, previous gu
 data Action = Move Code State   -- input Code in State
             | Start BoxOfPegs   -- returns starting state with new box of pegs
 
-data Result = EndOfGame Int BoxOfPegs        -- end of game
+data Result = EndOfGame Int Code BoxOfPegs        -- end of game
             | ContinueGame State   -- continue with new state
          deriving (Eq, Show)
 
@@ -36,8 +36,8 @@ type Player = Game -> Result -> Code
 -- MasterMind --
 mastermind :: Game
 mastermind (Move guess (State code prevresult boxOfPegs))
-  | guess == code = EndOfGame 1 boxOfPegs
-  | length prevresult == 8 = EndOfGame 0 boxOfPegs
+  | guess == code = EndOfGame 1 code boxOfPegs
+  | length prevresult == 8 = EndOfGame 0 code boxOfPegs
   | otherwise =
       ContinueGame (State code ((guess, (makehint guess code)):prevresult) boxOfPegs)
 
@@ -80,6 +80,3 @@ instance Show State where
 
 instance Eq State where
  State sc1 g1 b1 == State sc2 g2 b2 = sc1 == sc2 && g1 == g2 && b1 == b2
-
--- guess = (Yellow,Blue,Green,Orange)
--- code = (Yellow,Green,Purple,Blue)
