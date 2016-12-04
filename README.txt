@@ -4,4 +4,4 @@ cabal install gloss-rendering
 cabal install gloss
 
 When running ghci, use the flag
-ghci -package GLUT
+ghci -package GLUT -fno-ghci-sandbox
